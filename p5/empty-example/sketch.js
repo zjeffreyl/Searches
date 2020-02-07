@@ -3,7 +3,7 @@ function Block(x, y, side) {
     this.y = y;
     this.side = side;
     this.isObstacle = false;
-    this.brightness = (255,255,255);
+    this.brightness = 255;
 }
   
 Block.prototype.show = function()
@@ -16,8 +16,9 @@ Block.prototype.show = function()
 
 Block.prototype.toggleObstacle = function()
 {
+  let toggleColor = color(68, 112, 173);
   this.isObstacle = !this.isObstacle;
-  this.isObstacle ? this.brightness = color(68, 112, 173) : this.brightness = color(255,255,255);
+  this.isObstacle ? this.brightness = toggleColor : this.brightness = 255;
 }
 
 Block.prototype.clicked = function(mX, mY)
@@ -46,25 +47,28 @@ function SelectorButton(x, y, color, text) {
     this.x = x;
     this.y = y;
     this.color = color;
+    this.secondaryColor = '#fff';
     this.text = text;
 }
   
 SelectorButton.prototype.show = function()
 {
-    this.createButton(this.text).style('color', this.color).style('border', '2px solid ' + this.color);
-    this.position(this.x, this.y);
-    this.mouseOver(this.onTop).mouseOut(this.outside);
+    createButton(this.text).position(this.x, this.y).mouseOver(this.onTop).mouseOut(this.outside).style('color', this.color).style('border', '2px solid ' + this.color).style('outline','0').style('transition', 'box-shadow 300ms ease-in-out, color 300ms ease-in-out').style('box-shadow', '0 0 40px 40px ' + this.secondaryColor + ' inset');
 }
 
 
 SelectorButton.prototype.onTop = function() 
 {
-    this.style('color', '#fff').style('outline','0').style('transition', 'box-shadow 300ms ease-in-out, color 300ms ease-in-out').style('box-shadow', '0 0 40px 40px ' + this.color + ' inset');
+    this.secondaryColor = this.color;
+    this.color = '#fff';
+    //style('color', '#fff').style('outline','0').style('transition', 'box-shadow 300ms ease-in-out, color 300ms ease-in-out').style('box-shadow', '0 0 40px 40px ' + this.color + ' inset');
 }
 
 SelectorButton.prototype.outside = function() 
 {
-    button.style('color', this.color).style('outline','0').style('transition', 'box-shadow 300ms ease-in-out, color 300ms ease-in-out').style('box-shadow', '0 0 40px 40px #fff inset'); 
+    this.color = this.secondaryColor;
+    this.secondaryColor = '#fff';
+    //style('color', this.color).style('outline','0').style('transition', 'box-shadow 300ms ease-in-out, color 300ms ease-in-out').style('box-shadow', '0 0 40px 40px #fff inset'); 
 }
 
 
@@ -77,7 +81,6 @@ function setup() {
   createCanvas(600, 600);
   noStroke();
   rectMode(CENTER);
-  createButtons();
   //Create grid
   background(255);
   for (var i = 20; i < width; i += 20) {
@@ -87,31 +90,49 @@ function setup() {
       blocks.push(block);
     }
   }
+  createButtons();
 }
 
 function mousePressed() {
-  for(let i = 0; i < blocks.length; i++)
-  {
-    blocks[i].clicked(mouseX, mouseY);
-  }
+  // for(let i = 0; i < blocks.length; i++)
+  // {
+  //   blocks[i].clicked(mouseX, mouseY);
+  // }
 }
 
 function createButtons()
 {
-  buttonStart = SelectorButton(40, 30, '#1abc9c', 'Set Start');
-  buttonFinish = SelectorButton(140, 30, '#e74c3c', 'Set Finish');
-  buttonObstacle = SelectorButton(240, 30, '#2c3e50', 'Set Obstacle');
+  buttonStart = createButton('Set Start');
+  buttonStart.position(40, 30);
+  buttonStart.mouseOver(onTop).mouseOut(outside).style('color', '#1abc9c').style('border', '2px solid ' + '#1abc9c');
+
+  // buttonStart = new SelectorButton(40, 30, '#1abc9c', 'Set Start');
+  // buttonFinish = new SelectorButton(140, 30, '#e74c3c', 'Set Finish');
+  // buttonObstacle = new SelectorButton(240, 30, '#2c3e50', 'Set Obstacle');
+}
+
+function onTop() 
+{
+  buttonStart.style('color', '#fff').style('outline', '0');
+  buttonStart.style('transition', 'box-shadow 300ms ease-in-out, color 300ms ease-in-out').style('box-shadow', '0 0 40px 40px #1abc9c inset')
+}
+
+function outside()
+{
+  buttonStart.style('color', '#1abc9c')
+  buttonStart.style('background-color', '#fff').style('outline', '0');
+  buttonStart.style('transition', 'box-shadow 300ms ease-in-out, color 300ms ease-in-out').style('box-shadow', '0 0 40px 40px #fff inset')
 }
 
 function draw() {
-  for(var i = 0; i < blocks.length; i++)
-  {
-    blocks[i].rollover(mouseX, mouseY);
-    blocks[i].show();
-  }
-  // buttonStart.show();
-  // buttonFinish.show();
-  // buttonObstacle.show();
+  // for(var i = 0; i < blocks.length; i++)
+  // {
+  //   blocks[i].rollover(mouseX, mouseY);
+  //   blocks[i].show();
+  // }
+  buttonStart.show();
+  buttonFinish.show();
+  buttonObstacle.show();
 }
 
 
