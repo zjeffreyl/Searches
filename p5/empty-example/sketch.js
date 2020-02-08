@@ -3,22 +3,23 @@ function Block(x, y, side) {
     this.y = y;
     this.side = side;
     this.isObstacle = false;
-    this.brightness = 255;
+    this.color = (255,255,255);
+    this.rolloverColor = color(255,165,0);
 }
   
 Block.prototype.show = function()
 {
-    let lightBlue = color(173,216,230);
-    fill(this.brightness, 125);
+    var lightBlue = color(173,216,230);
+    //color is always set
+    fill(this.color, 125);
     stroke(lightBlue);
     rect(this.x, this.y, this.side, this.side);
 }
 
 Block.prototype.toggleObstacle = function()
 {
-  let toggleColor = color(68, 112, 173);
   this.isObstacle = !this.isObstacle;
-  this.isObstacle ? this.brightness = toggleColor : this.brightness = 255;
+  this.isObstacle ? this.color = this.color : this.color = 255;
 }
 
 Block.prototype.clicked = function(mX, mY)
@@ -33,47 +34,21 @@ Block.prototype.clicked = function(mX, mY)
 Block.prototype.rollover = function(mX, mY)
 {
   let d = dist(mX, mY, this.x, this.y);
+  //If mouse is in a block
   if (d < this.side/2)
   {
-      if(!this.isObstacle) this.brightness = color(255,165,0)
+      //If it is not an obstacle change color
+      if(!this.isObstacle) this.color = this.rolloverColor;
   }
+  //If mouse is not in the block for every other block
   else
   {
-    this.isObstacle ? this.brightness = color(68, 112, 173) : this.brightness = 255;
+    if(!this.isObstacle) this.color = 255;
   }
 }
 
-function SelectorButton(x, y, color, text) {
-    this.x = x;
-    this.y = y;
-    this.color = color;
-    this.secondaryColor = '#fff';
-    this.text = text;
-}
-  
-SelectorButton.prototype.show = function()
-{
-    createButton(this.text).position(this.x, this.y).mouseOver(this.onTop).mouseOut(this.outside).style('color', this.color).style('border', '2px solid ' + this.color).style('outline','0').style('transition', 'box-shadow 300ms ease-in-out, color 300ms ease-in-out').style('box-shadow', '0 0 40px 40px ' + this.secondaryColor + ' inset');
-}
-
-
-SelectorButton.prototype.onTop = function() 
-{
-    this.secondaryColor = this.color;
-    this.color = '#fff';
-    //style('color', '#fff').style('outline','0').style('transition', 'box-shadow 300ms ease-in-out, color 300ms ease-in-out').style('box-shadow', '0 0 40px 40px ' + this.color + ' inset');
-}
-
-SelectorButton.prototype.outside = function() 
-{
-    this.color = this.secondaryColor;
-    this.secondaryColor = '#fff';
-    //style('color', this.color).style('outline','0').style('transition', 'box-shadow 300ms ease-in-out, color 300ms ease-in-out').style('box-shadow', '0 0 40px 40px #fff inset'); 
-}
-
-
 let blocks = [];
-let buttonStart;
+var buttonStart;
 let buttonFinish;
 let buttonObstacle;
 
@@ -82,7 +57,7 @@ function setup() {
   noStroke();
   rectMode(CENTER);
   //Create grid
-  background(255);
+  background('#2c3e50');
   for (var i = 20; i < width; i += 20) {
     // draw one line of 20 rectangles across the x-axis
     for (var j = 40; j < height - 80; j += 20) {
@@ -94,45 +69,65 @@ function setup() {
 }
 
 function mousePressed() {
-  // for(let i = 0; i < blocks.length; i++)
-  // {
-  //   blocks[i].clicked(mouseX, mouseY);
-  // }
+  for(let i = 0; i < blocks.length; i++)
+  {
+    blocks[i].clicked(mouseX, mouseY);
+  }
 }
 
 function createButtons()
 {
   buttonStart = createButton('Set Start');
   buttonStart.position(40, 30);
-  buttonStart.mouseOver(onTop).mouseOut(outside).style('color', '#1abc9c').style('border', '2px solid ' + '#1abc9c');
+  buttonStart.class("btn fourth start");
+  buttonStart.mousePressed(setStart);
 
-  // buttonStart = new SelectorButton(40, 30, '#1abc9c', 'Set Start');
-  // buttonFinish = new SelectorButton(140, 30, '#e74c3c', 'Set Finish');
-  // buttonObstacle = new SelectorButton(240, 30, '#2c3e50', 'Set Obstacle');
+  buttonStart = createButton('Set Finish');
+  buttonStart.position(140, 30);
+  buttonStart.class("btn fourth finish");
+  buttonStart.mousePressed(setFinish);
+
+  buttonStart = createButton('Set Obstacle');
+  buttonStart.position(240, 30);
+  buttonStart.class("btn fourth obstacle");
+  buttonStart.mousePressed(setObstacle);
 }
 
-function onTop() 
-{
-  buttonStart.style('color', '#fff').style('outline', '0');
-  buttonStart.style('transition', 'box-shadow 300ms ease-in-out, color 300ms ease-in-out').style('box-shadow', '0 0 40px 40px #1abc9c inset')
-}
 
-function outside()
-{
-  buttonStart.style('color', '#1abc9c')
-  buttonStart.style('background-color', '#fff').style('outline', '0');
-  buttonStart.style('transition', 'box-shadow 300ms ease-in-out, color 300ms ease-in-out').style('box-shadow', '0 0 40px 40px #fff inset')
-}
 
 function draw() {
-  // for(var i = 0; i < blocks.length; i++)
-  // {
-  //   blocks[i].rollover(mouseX, mouseY);
-  //   blocks[i].show();
-  // }
-  buttonStart.show();
-  buttonFinish.show();
-  buttonObstacle.show();
+  for(var i = 0; i < blocks.length; i++)
+  {
+    blocks[i].rollover(mouseX, mouseY);
+    blocks[i].show();
+  };
+}
+
+function setStart()
+{
+  for(var i = 0; i < blocks.length; i++)
+  {
+    blocks[i].rolloverColor = color(231, 76, 60, 25);
+    blocks[i].brightness = color(231,76,60);
+  };
+}
+
+function setFinish()
+{
+  for(var i = 0; i < blocks.length; i++)
+  {
+    blocks[i].rolloverColor = color(26, 188, 156, 25);
+    blocks[i].brightness = color(26, 188, 156);
+  };
+}
+
+function setObstacle()
+{
+  for(var i = 0; i < blocks.length; i++)
+  {
+    blocks[i].rolloverColor = color(52, 152, 219, 25);
+    blocks[i].brightness = color(52, 152, 219);
+  };
 }
 
 
