@@ -42,7 +42,7 @@ function createButtons()
 function draw() {
   for(var i = 0; i < blocks.length; i++)
   {
-    //blocks[i].rollover(mouseX, mouseY);
+    blocks[i].rollover(mouseX, mouseY);
     blocks[i].show();
   };
 }
@@ -89,6 +89,7 @@ function Block(x, y, side) {
     this.color = color(255);
     this.settingColor = color(255);
     this.rolloverColor = color(255,165,0);
+    this.isObstacle = false;
 }
 
 Block.prototype.getColor = function()
@@ -120,16 +121,17 @@ Block.prototype.clicked = function(mX, mY)
   let d = dist(mX, mY, this.x, this.y);
   if (d < this.side/2)
   {
-    if(str(this.color) == str(color(255)))
+    //TODO: Cannot use color due to roll over
+    if(!this.isObstacle)
     {
+      this.isObstacle = true;
       this.clearSameColor(this.settingColor)
-      console.log("White");
       this.color = this.settingColor;
     }
     else
     {
-      console.log("Non white");
       this.color = color(255);
+      this.isObstacle = false;
 
     }
   }
@@ -142,24 +144,24 @@ Block.prototype.clearSameColor = function(color)
   {
     if(str(blocks[i].color) == str(color))
     {
+      blocks[i].isObstacle = false;
       blocks[i].setWhite();
     }
   }
 }
 
-// Block.prototype.rollover = function(mX, mY)
-// {
-//   let d = dist(mX, mY, this.x, this.y);
-//   //If mouse is in a block
-//   if (d < this.side/2)
-//   {
-//       //If it is not an obstacle change color
-//       if(this.color != color(255)) this.color = this.rolloverColor;
-//   }
-//   //If mouse is not in the block for every other block
-//   else
-//   {
-//     if(this.color != color(255)) this.color = 255;
-//   }
-// }
+Block.prototype.rollover = function(mX, mY)
+{
+  let d = dist(mX, mY, this.x, this.y);
+  //If mouse is in a block
+  if (d < this.side/2)
+  {
+      //If it is not an obstacle change color
+      if(!this.isObstacle) this.color = this.rolloverColor;
+  }
+  else
+  {
+      if(!this.isObstacle) this.color = color(255);
+  }
+}
 
