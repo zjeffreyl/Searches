@@ -2,21 +2,30 @@ let blocks = [];
 var buttonStart;
 let buttonFinish;
 let buttonObstacle;
+let buttonMazeGenerator;
 let drawingWalls = false;
+let mazeAlgorithm = "PRIMS";
+let canvasHeight = 840;
+let canvasWidth = 900;
+let numberOfTilesHorizontal = 0;
+let numberOfTilesVertical = 0;
 
 function setup() {
-  createCanvas(600, 600);
+  createCanvas(canvasHeight, canvasWidth);
   noStroke();
   rectMode(CENTER);
   //Create grid
   background("#2c3e50");
-  for (var i = 20; i < width; i += 20) {
+  for (var i = 20; i < height - 80; i += 20) {
     // draw one line of 20 rectangles across the x-axis
-    for (var j = 40; j < height - 80; j += 20) {
-      let block = new Block(i, j + 80, 20);
+    for (var j = 20; j < width; j += 20) {
+      let block = new Block(j, i + 80, 20);
       blocks.push(block);
     }
   }
+  numberOfTilesHorizontal = ((i - 20) / 20);
+  numberOfTilesVertical = ((j - 40) / 20) - 1;
+  console.log(numberOfTilesHorizontal + " " + numberOfTilesVertical);
   createButtons();
 }
 
@@ -35,6 +44,11 @@ function createButtons() {
   buttonObstacle.position(240, 30);
   buttonObstacle.class("btn fourth obstacle");
   buttonObstacle.mousePressed(setWall);
+
+  buttonMazeGenerator = createButton("Make Maze");
+  buttonMazeGenerator.position(440, 30);
+  buttonMazeGenerator.class("btn fourth obstacle");
+  buttonMazeGenerator.mousePressed(generateMaze);
 }
 
 function draw() {
@@ -55,7 +69,6 @@ function mousePressed() {
 mouseDragged = function() {
   //Selected set obstacle
   if (drawingWalls) {
-    console.log("Drawing");
     for (var i = 0; i < blocks.length; i++) {
       blocks[i].dragged(mouseX, mouseY);
     }
@@ -86,6 +99,80 @@ function setWall() {
     blocks[i].rolloverColor = color(52, 152, 219, 25);
     blocks[i].settingColor = color(52, 152, 219);
   }
+}
+
+function generateMaze() {
+  //set up maze
+  mazeGridInit();
+  primsAlgorithm();
+}
+
+function primsAlgorithm()
+{
+  let current = getOpenRandomSpace();
+  //method needs to be created from all choosen blocks
+  let discovered = [current];
+  let frontier = [];
+  do
+  {
+    frontier = getFrontier(current[0], current[1]);
+    //choose a neighbor 
+    let neighbor = Math.floor(Math.random() * frontier.length);
+    //remove the block between the two
+    blocks[getGrid2DIndex((frontier[neighbor][0] + current[0])/2, (frontier[neighbor][1] + current[1])/2)].clearBlock();
+  }
+  while(frontier.length != 0);
+}
+
+// Contains 
+function getFrontier(currentIndexX, currentIndexY) {
+  let neighborIndices = [];
+  if(currentIndexY + 2 <= numberOfTilesVertical)
+  {
+    neighborIndices.push([currentIndexX, currentIndexY + 2]);
+  }
+  if(currentIndexY - 2 > 0)
+  {
+    neighborIndices.push([currentIndexX, currentIndexY - 2]);
+  }
+  if(currentIndexX + 2 <= numberOfTilesHorizontal)
+  {
+    neighborIndices.push([currentIndexX + 2, currentIndexY]);
+  }
+  if(currentIndexX - 2 > 0)
+  {
+    neighborIndices.push([currentIndexX - 2, currentIndexY]);
+  }
+  return neighborIndices;
+}
+
+function getOpenRandomSpace() {
+  let startNodeIndexX = 0;
+  let startNodeIndexY = 0;
+  do
+  {
+    startNodeIndexX = Math.floor(Math.random() * numberOfTilesHorizontal);
+    startNodeIndexY = Math.floor(Math.random() * numberOfTilesVertical);
+  }
+  while(blocks[getGrid2DIndex(startNodeIndexX, startNodeIndexY)].isObstacle);
+  return [startNodeIndexX, startNodeIndexY];
+}
+
+function mazeGridInit() {
+  for (var i = 0; i < numberOfTilesVertical + 2; i++) {
+    for (var j = 0; j < numberOfTilesHorizontal; j++) {
+      if((i % 2 == 0 || j % 2 == 0) && !blocks[getGrid2DIndex(i,j)].isObstacle)
+      {
+        blocks[getGrid2DIndex(i,j)].fillIn(color(52, 152, 219));
+      }
+    }
+  }
+}
+
+function getGrid2DIndex(x, y)
+{
+  //If i want to get 2 by 2 then numberOfTilesVertical*(x-1) + 2
+  return ((numberOfTilesHorizontal + 1) * y) + x;
 }
 
 function Block(x, y, side) {
@@ -124,7 +211,7 @@ Block.prototype.clicked = function(mX, mY) {
     //TODO: Cannot use color due to roll over
     if (!this.isObstacle) {
       this.isObstacle = true;
-      if (!drawingWall) this.clearSameColor(this.settingColor);
+      if (!drawingWalls) this.clearSameColor(this.settingColor);
       this.color = this.settingColor;
     } else {
       this.color = color(255);
@@ -165,3 +252,14 @@ Block.prototype.dragged = function(mX, mY) {
     }
   }
 };
+
+Block.prototype.fillIn = function(color) {
+  this.isObstacle = true;
+  this.color = color;
+};
+
+Block.prototype.clearBlock = function() {
+  this.isObstacle = false;
+  this.color = color(255);
+};
+
