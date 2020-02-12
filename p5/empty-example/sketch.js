@@ -25,7 +25,6 @@ function setup() {
   }
   numberOfTilesHorizontal = ((i - 20) / 20);
   numberOfTilesVertical = ((j - 40) / 20) - 1;
-  console.log(numberOfTilesHorizontal + " " + numberOfTilesVertical);
   createButtons();
 }
 
@@ -109,41 +108,103 @@ function generateMaze() {
 
 function primsAlgorithm()
 {
+  //Holds tuples
   let current = getOpenRandomSpace();
+  current = [1,1]
   //method needs to be created from all choosen blocks
-  let discovered = [current];
+  let discovered = [];
+  blocks[getGrid2DIndex(current[0], current[1])].clearBlock();
+  discovered.push(current);
   let frontier = [];
+  let lastestDiscovered = current;
+  let i = 0;
   do
   {
-    frontier = getFrontier(current[0], current[1]);
-    //choose a neighbor 
+    frontier = getFrontier(lastestDiscovered, discovered, frontier);
+    //choose a frontier to use that is not discovered
     let neighbor = Math.floor(Math.random() * frontier.length);
+    let frontierChoosen = frontier[neighbor];
+    console.log("Frontier Choosen: " + frontierChoosen);
+    console.log("Dicovered Now: " + Array.from(discovered).join(' '));
+    //clear the block
+    blocks[getGrid2DIndex(frontierChoosen[0], frontierChoosen[1])].clearBlock();
     //remove the block between the two
-    blocks[getGrid2DIndex((frontier[neighbor][0] + current[0])/2, (frontier[neighbor][1] + current[1])/2)].clearBlock();
+    eraseBlock(frontierChoosen, discovered);
+    lastestDiscovered = frontier[neighbor];
+    //can safely add a frontier block to discovered
+    discovered.push(frontier[neighbor]);
+    frontier.splice(frontier[neighbor],1);
+    i++;
   }
   while(frontier.length != 0);
 }
 
-// Contains 
-function getFrontier(currentIndexX, currentIndexY) {
-  let neighborIndices = [];
-  if(currentIndexY + 2 <= numberOfTilesVertical)
+function eraseBlock(frontierChoosen, discovered)
+{
+  let choiceChoosen = [];
+  //check the adjacent values Up Down Right Left
+  let currentIndexX = frontierChoosen[0];
+  let currentIndexY = frontierChoosen[1];
+  //Top
+  if(currentIndexY + 2 <= numberOfTilesVertical && contains(discovered,[currentIndexX, currentIndexY + 2]))
+    {
+      console.log('Connecting : ' + [currentIndexX, currentIndexY + 2]);
+      choiceChoosen.push([currentIndexX, currentIndexY + 2]);
+    }
+  //Bottom
+  if(currentIndexY - 2 > 0 && contains(discovered, [currentIndexX, currentIndexY - 2])) 
+    {
+      console.log('Connecting: ' + [currentIndexX, currentIndexY + 2]);
+      choiceChoosen.push([currentIndexX, currentIndexY - 2]);
+    }
+  //Right
+  if(currentIndexX + 2 <= numberOfTilesHorizontal && contains(discovered, [currentIndexX + 2, currentIndexY])) 
+    {
+      console.log('Connecting: ' + [currentIndexX, currentIndexY + 2]);
+      choiceChoosen.push([currentIndexX + 2, currentIndexY]);
+    }
+  //Left
+  if(currentIndexX - 2 > 0 && contains(discovered, [currentIndexX - 2, currentIndexY])) 
+    {
+      console.log('Connecting: ' + [currentIndexX, currentIndexY + 2]);
+      choiceChoosen.push([currentIndexX - 2, currentIndexY]);
+    }
+  let choice = choiceChoosen[Math.floor(Math.random() * choiceChoosen.length)];
+  console.log("Need to erase this: " + choice);
+  blocks[getGrid2DIndex((choice[0] + frontierChoosen[0])/2, (choice[1] + frontierChoosen[1])/2)].clearBlock();
+}
+
+// Add to the frontier
+function getFrontier(lastestDiscovered, discovered, frontier) {
+  //A block that is discovered
+  let currentIndexX = lastestDiscovered[0];
+  let currentIndexY = lastestDiscovered[1];
+  //Check if new frontier values are in the grid, not already discovered, not already in the frontier (to avoid duplicates)
+  if(currentIndexY + 2 <= numberOfTilesVertical && !contains(discovered,[currentIndexX, currentIndexY + 2]) && !contains(frontier, [currentIndexX, currentIndexY + 2]))
   {
-    neighborIndices.push([currentIndexX, currentIndexY + 2]);
+    console.log('Adding new frontier: ' + [currentIndexX, currentIndexY + 2]);
+    frontier.push([currentIndexX, currentIndexY + 2]);
+    blocks[getGrid2DIndex(currentIndexX, currentIndexY + 2)].fillIn(color(0));
   }
-  if(currentIndexY - 2 > 0)
+  if(currentIndexY - 2 > 0 && !contains(discovered, [currentIndexX, currentIndexY - 2]) && !contains(frontier, [currentIndexX, currentIndexY - 2]))
   {
-    neighborIndices.push([currentIndexX, currentIndexY - 2]);
+    console.log('Adding new frontier: ' + [currentIndexX, currentIndexY - 2]);
+    frontier.push([currentIndexX, currentIndexY - 2]);
+    blocks[getGrid2DIndex(currentIndexX, currentIndexY - 2)].fillIn(color(0));
   }
-  if(currentIndexX + 2 <= numberOfTilesHorizontal)
+  if(currentIndexX + 2 <= numberOfTilesHorizontal && !contains(discovered, [currentIndexX + 2, currentIndexY]) && !contains(frontier, [currentIndexX + 2, currentIndexY]))
   {
-    neighborIndices.push([currentIndexX + 2, currentIndexY]);
+    console.log('Adding new frontier: ' + [currentIndexX + 2, currentIndexY]);
+    frontier.push([currentIndexX + 2, currentIndexY]);
+    blocks[getGrid2DIndex(currentIndexX + 2, currentIndexY)].fillIn(color(0));
   }
-  if(currentIndexX - 2 > 0)
+  if(currentIndexX - 2 > 0 && !contains(discovered, [currentIndexX - 2, currentIndexY]) && !contains(frontier, [currentIndexX - 2, currentIndexY]))
   {
-    neighborIndices.push([currentIndexX - 2, currentIndexY]);
+    console.log('Adding new frontier: ' + [currentIndexX - 2, currentIndexY]);
+    frontier.push([currentIndexX - 2, currentIndexY]);
+    blocks[getGrid2DIndex(currentIndexX - 2, currentIndexY)].fillIn(color(0));
   }
-  return neighborIndices;
+  return frontier;
 }
 
 function getOpenRandomSpace() {
@@ -173,6 +234,18 @@ function getGrid2DIndex(x, y)
 {
   //If i want to get 2 by 2 then numberOfTilesVertical*(x-1) + 2
   return ((numberOfTilesHorizontal + 1) * y) + x;
+}
+
+function contains(arr, val)
+{
+  for(var i = 0; i < arr.length; i++)
+  {
+    if(JSON.stringify(arr[i]) == JSON.stringify(val))
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
 function Block(x, y, side) {
