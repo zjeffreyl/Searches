@@ -117,26 +117,22 @@ function primsAlgorithm()
   discovered.push(current);
   let frontier = [];
   let lastestDiscovered = current;
-  let i = 0;
   do
   {
-    frontier = getFrontier(lastestDiscovered, discovered, frontier);
+    frontier.push.apply(frontier, getFrontier(lastestDiscovered, discovered));
     //choose a frontier to use that is not discovered
     let neighbor = Math.floor(Math.random() * frontier.length);
     let frontierChoosen = frontier[neighbor];
-    console.log("Frontier Choosen: " + frontierChoosen);
-    console.log("Dicovered Now: " + Array.from(discovered).join(' '));
     //clear the block
     blocks[getGrid2DIndex(frontierChoosen[0], frontierChoosen[1])].clearBlock();
     //remove the block between the two
     eraseBlock(frontierChoosen, discovered);
     lastestDiscovered = frontier[neighbor];
     //can safely add a frontier block to discovered
-    discovered.push(frontier[neighbor]);
-    frontier.splice(frontier[neighbor],1);
-    i++;
+    discovered.push(lastestDiscovered);
+    frontier = frontier.filter(val => val !== lastestDiscovered);
   }
-  while(frontier.length != 0);
+  while(frontier.length > 0);
 }
 
 function eraseBlock(frontierChoosen, discovered)
@@ -148,34 +144,30 @@ function eraseBlock(frontierChoosen, discovered)
   //Top
   if(currentIndexY + 2 <= numberOfTilesVertical && contains(discovered,[currentIndexX, currentIndexY + 2]))
     {
-      console.log('Connecting : ' + [currentIndexX, currentIndexY + 2]);
       choiceChoosen.push([currentIndexX, currentIndexY + 2]);
     }
   //Bottom
   if(currentIndexY - 2 > 0 && contains(discovered, [currentIndexX, currentIndexY - 2])) 
     {
-      console.log('Connecting: ' + [currentIndexX, currentIndexY + 2]);
       choiceChoosen.push([currentIndexX, currentIndexY - 2]);
     }
   //Right
   if(currentIndexX + 2 <= numberOfTilesHorizontal && contains(discovered, [currentIndexX + 2, currentIndexY])) 
     {
-      console.log('Connecting: ' + [currentIndexX, currentIndexY + 2]);
       choiceChoosen.push([currentIndexX + 2, currentIndexY]);
     }
   //Left
   if(currentIndexX - 2 > 0 && contains(discovered, [currentIndexX - 2, currentIndexY])) 
     {
-      console.log('Connecting: ' + [currentIndexX, currentIndexY + 2]);
       choiceChoosen.push([currentIndexX - 2, currentIndexY]);
     }
   let choice = choiceChoosen[Math.floor(Math.random() * choiceChoosen.length)];
-  console.log("Need to erase this: " + choice);
   blocks[getGrid2DIndex((choice[0] + frontierChoosen[0])/2, (choice[1] + frontierChoosen[1])/2)].clearBlock();
 }
 
 // Add to the frontier
-function getFrontier(lastestDiscovered, discovered, frontier) {
+function getFrontier(lastestDiscovered, discovered) {
+  frontier = []
   //A block that is discovered
   let currentIndexX = lastestDiscovered[0];
   let currentIndexY = lastestDiscovered[1];
