@@ -5,8 +5,8 @@ let buttonObstacle;
 let buttonMazeGenerator;
 let drawingWalls = false;
 let mazeAlgorithm = "PRIMS";
-let canvasWidth = 860;
-let canvasHeight = 940;
+let canvasWidth = 880;
+let canvasHeight = 960;
 let numberOfTilesHorizontal = 0;
 let numberOfTilesVertical = 0;
 
@@ -105,6 +105,8 @@ function setWall() {
 function generateMaze() {
   //set up maze
   mazeGridInit();
+  console.log("numberOfTilesVertical: " + numberOfTilesVertical);
+  console.log("numberOfTilesHorizontal: " + numberOfTilesHorizontal);
   primsAlgorithm();
 }
 
@@ -179,7 +181,7 @@ function eraseBlock(frontierChoosen, discovered)
   let currentIndexX = frontierChoosen[0];
   let currentIndexY = frontierChoosen[1];
   //Top
-  if(currentIndexY + 2 <= numberOfTilesVertical && contains(discovered,[currentIndexX, currentIndexY + 2]) && !contains(choiceChoosen, [currentIndexX, currentIndexY + 2]))
+  if(currentIndexY + 2 < numberOfTilesVertical && contains(discovered,[currentIndexX, currentIndexY + 2]) && !contains(choiceChoosen, [currentIndexX, currentIndexY + 2]))
     {
       choiceChoosen.push([currentIndexX, currentIndexY + 2]);
     }
@@ -189,7 +191,7 @@ function eraseBlock(frontierChoosen, discovered)
       choiceChoosen.push([currentIndexX, currentIndexY - 2]);
     }
   //Right
-  if(currentIndexX + 2 <= numberOfTilesHorizontal && contains(discovered, [currentIndexX + 2, currentIndexY]) && !contains(choiceChoosen, [currentIndexX + 2, currentIndexY])) 
+  if(currentIndexX + 2 < numberOfTilesHorizontal && contains(discovered, [currentIndexX + 2, currentIndexY]) && !contains(choiceChoosen, [currentIndexX + 2, currentIndexY])) 
     {
       choiceChoosen.push([currentIndexX + 2, currentIndexY]);
     }
@@ -209,7 +211,7 @@ function getFrontier(lastestDiscovered, discovered, allFrontier) {
   let currentIndexX = lastestDiscovered[0];
   let currentIndexY = lastestDiscovered[1];
   //Check if new frontier values are in the grid, not already discovered, not already in the frontier (to avoid duplicates)
-  if(currentIndexY + 2 <= numberOfTilesVertical && !contains(discovered,[currentIndexX, currentIndexY + 2]) && !contains(allFrontier, [currentIndexX, currentIndexY + 2])  && !contains(frontier, [currentIndexX, currentIndexY + 2]))
+  if(currentIndexY + 2 < numberOfTilesVertical && !contains(discovered,[currentIndexX, currentIndexY + 2]) && !contains(allFrontier, [currentIndexX, currentIndexY + 2])  && !contains(frontier, [currentIndexX, currentIndexY + 2]))
   {
     console.log('Adding new frontier top: ' + [currentIndexX, currentIndexY + 2]);
     frontier.push([currentIndexX, currentIndexY + 2]);
@@ -221,7 +223,7 @@ function getFrontier(lastestDiscovered, discovered, allFrontier) {
     frontier.push([currentIndexX, currentIndexY - 2]);
     blocks[getGrid2DIndex(currentIndexX, currentIndexY - 2)].fillIn(color(0));
   }
-  if(currentIndexX + 2 <= numberOfTilesHorizontal && !contains(discovered, [currentIndexX + 2, currentIndexY]) && !contains(allFrontier, [currentIndexX + 2, currentIndexY]) && !contains(frontier, [currentIndexX + 2, currentIndexY]))
+  if(currentIndexX + 2 < numberOfTilesHorizontal && !contains(discovered, [currentIndexX + 2, currentIndexY]) && !contains(allFrontier, [currentIndexX + 2, currentIndexY]) && !contains(frontier, [currentIndexX + 2, currentIndexY]))
   {
     console.log('Adding new frontier left: ' + [currentIndexX + 2, currentIndexY]);
     frontier.push([currentIndexX + 2, currentIndexY]);
