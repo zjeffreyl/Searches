@@ -73,6 +73,7 @@ function draw() {
 
 function solveMaze() {
   algorithms = new Algorithms(chooseAlgorithm.value(), blocks, numberOfTilesVertical, numberOfTilesHorizontal);
+  algorithms.run();
 }
 
 function mousePressed() {

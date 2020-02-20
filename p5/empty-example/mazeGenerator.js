@@ -6,16 +6,10 @@ function generateMaze() {
   primsAlgorithm();
 }
 
-function keyPressed()
-{
-
-}
-
 function primsAlgorithm()
 {
   //Holds tuples
   let current = getOpenRandomSpace();
-  current = [1,1]
   //method needs to be created from all choosen blocks
   let discovered = [];
   blocks[getGrid2DIndex(current[0], current[1])].clearBlock();
