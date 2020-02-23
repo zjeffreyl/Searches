@@ -1,13 +1,12 @@
 function generateMaze() {
   //set up maze
   mazeGridInit();
-  console.log("numberOfTilesVertical: " + numberOfTilesVertical);
-  console.log("numberOfTilesHorizontal: " + numberOfTilesHorizontal);
   primsAlgorithm();
 }
 
 function primsAlgorithm()
 {
+  mazeBlocksToErase = [];
   //Holds tuples
   let current = getOpenRandomSpace();
   //method needs to be created from all choosen blocks
@@ -33,6 +32,7 @@ function primsAlgorithm()
     i++;
   }
   while(frontier.length != 0);
+  mazeFinished = true;
 }
 
 function eraseFrontierColor()
@@ -80,7 +80,8 @@ function eraseBlock(frontierChoosen, discovered)
       choiceChoosen.push([currentIndexX - 2, currentIndexY]);
     }
   let choice = choiceChoosen[Math.floor(Math.random() * choiceChoosen.length)];
-  blocks[getGrid2DIndex((choice[0] + frontierChoosen[0])/2, (choice[1] + frontierChoosen[1])/2)].clearBlock();
+  mazeBlocksToErase.push(blocks[getGrid2DIndex((choice[0] + frontierChoosen[0])/2, (choice[1] + frontierChoosen[1])/2)]);
+  //blocks[getGrid2DIndex((choice[0] + frontierChoosen[0])/2, (choice[1] + frontierChoosen[1])/2)].clearBlock();
 }
 
 // Add to the frontier

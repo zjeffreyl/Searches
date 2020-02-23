@@ -11,6 +11,8 @@ let canvasWidth = 880;
 let canvasHeight = 960;
 let numberOfTilesHorizontal = 0;
 let numberOfTilesVertical = 0;
+let mazeBlocksToErase = [];
+let mazeFinished = false;
 
 function setup() {
   createCanvas(canvasWidth, canvasHeight);
@@ -60,10 +62,23 @@ function createButtons() {
   runMaze = createButton("Solve");
   runMaze.position(640,30);
   runMaze.mousePressed(solveMaze);
+}
 
+let i = 0;
+function eraseBlock()
+{
+  mazeBlocksToErase[i/100].clearBlock()
 }
 
 function draw() {
+  setTimeout(eraseBlock, 1000);
+  i++;
+  if(i < mazeBlocksToErase.length && mazeFinished)
+  {
+    console.log("In here");
+    setTimeout(eraseBlock, 1000);
+    i++;
+  }
   for (var i = 0; i < blocks.length; i++) {
     //For the default orange color
     blocks[i].rollover(mouseX, mouseY);
