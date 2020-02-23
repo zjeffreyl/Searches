@@ -27,8 +27,17 @@ Algorithms.prototype.run = function() {
 				}
 			}
 			break;
+		case 'BFS':
+			this.findStartAndFinish();
+			bfs(startBlockIndex, path);
+			for(var i = 0; i < path.length; i++)
+			{
+				if(path[i] != startBlock && path[i] != finishBlock)
+				{
+					path[i].fillIn(color(255,165,0));
+				}
+			}
 		default:
-			console.log("Algorithm not recognized:" + this.algorithm + '|');
 			break;
 	}
 }
@@ -102,11 +111,40 @@ function dfs(nodeIndex, path) {
 	for(var i = 0; i < adjacent.length; i++)
 	{
 		//only choose the adjacent where the color is white
-			if(dfs(getGrid2DIndex(adjacent[i][0], adjacent[i][1]), path))
-			{
-				return true;
-			}
+		if(dfs(getGrid2DIndex(adjacent[i][0], adjacent[i][1]), path))
+		{
+			return true;
+		}
 	}
 	path.pop();
 	return false;
+}
+
+function bfs(nodeIndex, path) {
+	let queue = [];
+	queue.push(nodeIndex);
+	while(queue.length != 0)
+	{
+		let currentIndex = queue.shift();
+		console.log("Queue: " + queue + " on: " + currentIndex);
+		if(str(blocks[currentIndex].color) == str(color(255, 255, 0)) || str(blocks[currentIndex].color) == str(color(52, 152, 219)))
+		{
+			continue;
+		}
+		if(str(blocks[currentIndex].color) == str(color(26, 188, 156)))
+		{
+			return path;
+		}
+		if(str(blocks[currentIndex].color) != str(color(231, 76, 60))) blocks[currentIndex].fillIn(color(255,255,0));
+		let adjacent = getNeighbors(getXY(currentIndex));
+		for(var i = 0; i < adjacent.length; i++)
+		{
+			console.log("x: " + adjacent[i][0] + " y: " + adjacent[i][1]);
+			if(str(blocks[getGrid2DIndex(adjacent[i][0], adjacent[i][1])].color) != str(color(52, 152, 219)))
+			{
+				console.log("Pushing " + getGrid2DIndex(adjacent[i][0], adjacent[i][1]));
+				queue.push(getGrid2DIndex(adjacent[i][0], adjacent[i][1]));
+			}
+		}
+	}
 }

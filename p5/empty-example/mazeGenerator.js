@@ -81,7 +81,7 @@ function eraseBlock(frontierChoosen, discovered)
     }
   let choice = choiceChoosen[Math.floor(Math.random() * choiceChoosen.length)];
   mazeBlocksToErase.push(blocks[getGrid2DIndex((choice[0] + frontierChoosen[0])/2, (choice[1] + frontierChoosen[1])/2)]);
-  //blocks[getGrid2DIndex((choice[0] + frontierChoosen[0])/2, (choice[1] + frontierChoosen[1])/2)].clearBlock();
+  blocks[getGrid2DIndex((choice[0] + frontierChoosen[0])/2, (choice[1] + frontierChoosen[1])/2)].clearBlock();
 }
 
 // Add to the frontier
