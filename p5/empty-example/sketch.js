@@ -3,12 +3,16 @@ var buttonStart;
 let buttonFinish;
 let buttonObstacle;
 let buttonMazeGenerator;
+let chooseAlgorithm;
+let runMaze;
 let drawingWalls = false;
 let mazeAlgorithm = "PRIMS";
 let canvasWidth = 880;
 let canvasHeight = 960;
 let numberOfTilesHorizontal = 0;
 let numberOfTilesVertical = 0;
+let mazeBlocksToErase = [];
+let mazeFinished = false;
 
 function setup() {
   createCanvas(canvasWidth, canvasHeight);
@@ -50,14 +54,41 @@ function createButtons() {
   buttonMazeGenerator.position(440, 30);
   buttonMazeGenerator.class("btn fourth obstacle");
   buttonMazeGenerator.mousePressed(generateMaze);
+
+  chooseAlgorithm = createSelect("Select Algorithm");
+  chooseAlgorithm.position(540, 30);
+  chooseAlgorithm.option("DFS");
+
+  runMaze = createButton("Solve");
+  runMaze.position(640,30);
+  runMaze.mousePressed(solveMaze);
+}
+
+let i = 0;
+function eraseBlock()
+{
+  mazeBlocksToErase[i/100].clearBlock()
 }
 
 function draw() {
+  setTimeout(eraseBlock, 1000);
+  i++;
+  if(i < mazeBlocksToErase.length && mazeFinished)
+  {
+    console.log("In here");
+    setTimeout(eraseBlock, 1000);
+    i++;
+  }
   for (var i = 0; i < blocks.length; i++) {
     //For the default orange color
     blocks[i].rollover(mouseX, mouseY);
     blocks[i].show();
   }
+}
+
+function solveMaze() {
+  algorithms = new Algorithms(chooseAlgorithm.value(), blocks, numberOfTilesVertical, numberOfTilesHorizontal);
+  algorithms.run();
 }
 
 function mousePressed() {
@@ -102,13 +133,6 @@ function setWall() {
   }
 }
 
-function generateMaze() {
-  //set up maze
-  mazeGridInit();
-  console.log("numberOfTilesVertical: " + numberOfTilesVertical);
-  console.log("numberOfTilesHorizontal: " + numberOfTilesHorizontal);
-  primsAlgorithm();
-}
 
 function primsAlgorithm()
 {
