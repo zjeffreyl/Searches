@@ -3,6 +3,7 @@ var buttonStart;
 let buttonFinish;
 let buttonObstacle;
 let buttonMazeGenerator;
+let buttonClearGrid;
 let chooseAlgorithm;
 let runMaze;
 let drawingWalls = false;
@@ -36,19 +37,24 @@ function setup() {
 
 function createButtons() {
   buttonStart = createButton("Set Start");
-  buttonStart.position(40, 30);
+  buttonStart.position(20, 30);
   buttonStart.class("btn fourth start");
   buttonStart.mousePressed(setStart);
 
   buttonFinish = createButton("Set Finish");
-  buttonFinish.position(140, 30);
+  buttonFinish.position(120, 30);
   buttonFinish.class("btn fourth finish");
   buttonFinish.mousePressed(setFinish);
 
   buttonObstacle = createButton("Set Obstacle");
-  buttonObstacle.position(240, 30);
+  buttonObstacle.position(220, 30);
   buttonObstacle.class("btn fourth obstacle");
   buttonObstacle.mousePressed(setWall);
+
+  buttonClearGrid = createButton("Clear Grid");
+  buttonClearGrid.position(340, 30);
+  buttonClearGrid.class("btn fourth obstacle");
+  buttonClearGrid.mousePressed(clearGrid);
 
   buttonMazeGenerator = createButton("Make Maze");
   buttonMazeGenerator.position(440, 30);
@@ -59,6 +65,7 @@ function createButtons() {
   chooseAlgorithm.position(540, 30);
   chooseAlgorithm.option("DFS");
   chooseAlgorithm.option("BFS");
+  chooseAlgorithm.option("Greedy");
 
   runMaze = createButton("Solve");
   runMaze.position(640,30);
@@ -118,5 +125,13 @@ function setWall() {
   for (var i = 0; i < blocks.length; i++) {
     blocks[i].rolloverColor = color(52, 152, 219, 25);
     blocks[i].settingColor = color(52, 152, 219);
+  }
+}
+
+function clearGrid() {
+  for (var i = 0; i < blocks.length; i++) {
+    blocks[i].rolloverColor = color(255);
+    blocks[i].settingColor = color(255, 165, 0);
+    blocks[i].isObstacle = false;
   }
 }

@@ -37,6 +37,9 @@ Algorithms.prototype.run = function() {
 					path[i].fillIn(color(255,165,0));
 				}
 			}
+		case 'Greedy':
+			this.findStartAndFinish();
+			greedy(startBlockIndex, finishBlockIndex, path);
 		default:
 			break;
 	}
@@ -147,4 +150,33 @@ function bfs(nodeIndex, path) {
 			}
 		}
 	}
+}
+
+function greedy(startIndex, finishBlockIndex, path)
+{
+	let closed = [];
+	let currentXY = getXY(startIndex);
+	let endXY = getXY(finishBlockIndex);
+	let queue = new PriorityQueue();
+	queue.enqueue(currentXY);
+	while(true)
+	{
+		console.log(queue.toString());
+		if(queue.isEmpty()) return null;
+		let node = queue.dequeue();
+		if(node == endXY)
+		{
+			return path;
+		}
+		if(closed.includes(node))
+		{
+			closed.push(node)
+			for(var i = 0; i < getNeighbors(node); i++)
+			{
+				blocks[i].fillIn(color(255,255,0))
+				queue.push(blocks[i]);
+			}
+		}
+	}
+	console.log("Exited");
 }
