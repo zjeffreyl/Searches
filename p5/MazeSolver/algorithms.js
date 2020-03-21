@@ -40,6 +40,13 @@ Algorithms.prototype.run = function() {
 		case 'Greedy':
 			this.findStartAndFinish();
 			greedy(startBlockIndex, finishBlockIndex, path);
+			for(var i = 0; i < path.length; i++)
+			{
+				if(path[i] != startBlock && path[i] != finishBlock)
+				{
+					path[i].fillIn(color(255,165,0));
+				}
+			}
 		default:
 			break;
 	}
@@ -157,26 +164,51 @@ function greedy(startIndex, finishBlockIndex, path)
 	let closed = [];
 	let currentXY = getXY(startIndex);
 	let endXY = getXY(finishBlockIndex);
+	let pathNodes = [];
 	let queue = new PriorityQueue();
-	queue.enqueue(currentXY);
+	queue.enqueue(currentXY, heuristic(currentXY, endXY));
 	while(true)
 	{
-		console.log(queue.toString());
+		//console.log(queue.toString());
 		if(queue.isEmpty()) return null;
-		let node = queue.dequeue();
-		if(node == endXY)
+		let node = queue.dequeue().element;
+		//blocks[getGrid2DIndex(node[0], node[1])]
+		pathNodes.push(node)
+		if(heuristic(node,endXY) == 0)
 		{
+			for (let i = 0; i < queue.items.length; i++){
+				if (pathNodes.includes(i)){
+					pathNodes.splice(pathNodes.indexOf(i),1);
+				}
+			}
+			for (let i = 0; i < pathNodes.length; i++){
+				path.push(blocks[getGrid2DIndex(pathNodes[i][0], pathNodes[i][1])])
+			}
 			return path;
 		}
-		if(closed.includes(node))
-		{
+		if(!closed.includes(node))
+		{				
 			closed.push(node)
-			for(var i = 0; i < getNeighbors(node); i++)
+			let adjacent = getNeighbors(node)
+			for(var i = 0; i < adjacent.length; i++)
 			{
-				blocks[i].fillIn(color(255,255,0))
-				queue.push(blocks[i]);
+				if (!(blocks[getGrid2DIndex(adjacent[i][0], adjacent[i][1])].isObstacle))
+				{
+					blocks[getGrid2DIndex(adjacent[i][0], adjacent[i][1])].fillIn(color(255,255,0))
+					queue.enqueue(adjacent[i], heuristic(adjacent[i], endXY));
+				}
+				else if(heuristic(adjacent[i],endXY) == 0){
+					queue.enqueue(adjacent[i], heuristic(adjacent[i], endXY));
+				}
 			}
 		}
 	}
-	console.log("Exited");
+	
+}
+
+function heuristic(current, goal)
+{
+	let x = Math.abs(current[0] - goal[0]);
+	let y = Math.abs(current[1] - goal[1]);
+	return x + y;
 }
