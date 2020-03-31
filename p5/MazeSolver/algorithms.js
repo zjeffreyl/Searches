@@ -169,10 +169,8 @@ function greedy(startIndex, finishBlockIndex, path)
 	queue.enqueue(currentXY, heuristic(currentXY, endXY));
 	while(true)
 	{
-		//console.log(queue.toString());
 		if(queue.isEmpty()) return null;
 		let node = queue.dequeue().element;
-		//blocks[getGrid2DIndex(node[0], node[1])]
 		pathNodes.push(node)
 		if(heuristic(node,endXY) == 0)
 		{

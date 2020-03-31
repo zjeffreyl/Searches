@@ -44,14 +44,4 @@ class PriorityQueue {
 	{
 		return this.items.length == 0;
 	}
-
-	// toString()
-	// {
-	// 	let retstr = "";
-	// 	for(var i = 0; this.items.length; i++)
-	// 	{
-	// 		retstr = retstr + this.items[i] + ", ";
-	// 	}
-	// 	return retstr;
-	// }
 }
