@@ -1,19 +1,26 @@
+class QElement { 
+    constructor(element, priority) 
+    { 
+        this.element = element; 
+        this.priority = priority; 
+    } 
+} 
+  
 class PriorityQueue {
-	constructor(goal)
+	constructor()
 	{
 		this.items = [];
-		this.goal = goal;
 	}
 
-	enqueue(element)
+	enqueue(element, priority)
 	{
 		var contain = false;
-
+		var qElement = new QElement(element,priority);
 		for(var i = 0; i < this.items.length; i++)
 		{
-			if(heuristic(this.items[i], ) > element)
+			if(this.items[i].priority > qElement.priority)
 			{
-				this.items.splice(i, 0, element);
+				this.items.splice(i, 0, qElement);
 				contain = true;
 				break;
 			}
@@ -21,41 +28,20 @@ class PriorityQueue {
 
 		if(!contain)
 		{
-			this.items.push(element)
+			this.items.push(qElement)
 		}
 	}
 
 	dequeue()
 	{
-		if(this.items.length == 0)
-		{
-			return null;
+		if(this.isEmpty()){
+			return "No items to dequeue";
 		}
-		else
-		{
-			return this.items.shift();
-		}
+		return this.items.shift();
 	}
 
 	isEmpty()
 	{
 		return this.items.length == 0;
-	}
-
-	toString()
-	{
-		let retstr = "";
-		for(var i = 0; this.items.length; i++)
-		{
-			retstr = retstr + this.items[i] + ", ";
-		}
-		return retstr;
-	}
-
-	heuristic(current, goal)
-	{
-		let x = Math.abs(current[0] - goal[0]);
-		let y = Math.abs(current[1] - goal[1]);
-		return x + y;
 	}
 }
