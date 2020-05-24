@@ -30,8 +30,8 @@ function setup() {
       blocks.push(block);
     }
   }
-  numberOfTilesVertical = ((i - 20) / 20);
-  numberOfTilesHorizontal = ((j - 20) / 20);
+  numberOfTilesVertical = (i - 20) / 20;
+  numberOfTilesHorizontal = (j - 20) / 20;
   createButtons();
 }
 
@@ -53,25 +53,26 @@ function createButtons() {
 
   buttonClearGrid = createButton("Clear Grid");
   buttonClearGrid.position(340, 30);
-  buttonClearGrid.class("btn fourth obstacle");
+  buttonClearGrid.class("btn fourth button");
   buttonClearGrid.mousePressed(clearGrid);
 
   buttonMazeGenerator = createButton("Make Maze");
   buttonMazeGenerator.position(440, 30);
-  buttonMazeGenerator.class("btn fourth obstacle");
+  buttonMazeGenerator.class("btn fourth button");
   buttonMazeGenerator.mousePressed(generateMaze);
 
   chooseAlgorithm = createSelect("Select Algorithm");
-  chooseAlgorithm.position(540, 30);
+  chooseAlgorithm.position(560, -144);
   chooseAlgorithm.option("DFS");
   chooseAlgorithm.option("BFS");
   chooseAlgorithm.option("Greedy");
+  chooseAlgorithm.class("dropdown-el");
 
   runMaze = createButton("Solve");
-  runMaze.position(640,30);
+  runMaze.position(640, 30);
+  runMaze.class("btn fourth button");
   runMaze.mousePressed(solveMaze);
 }
-
 
 function draw() {
   for (var i = 0; i < blocks.length; i++) {
@@ -82,7 +83,12 @@ function draw() {
 }
 
 function solveMaze() {
-  algorithms = new Algorithms(chooseAlgorithm.value(), blocks, numberOfTilesVertical, numberOfTilesHorizontal);
+  algorithms = new Algorithms(
+    chooseAlgorithm.value(),
+    blocks,
+    numberOfTilesVertical,
+    numberOfTilesHorizontal
+  );
   algorithms.run();
 }
 
@@ -130,8 +136,6 @@ function setWall() {
 
 function clearGrid() {
   for (var i = 0; i < blocks.length; i++) {
-    blocks[i].rolloverColor = color(255);
-    blocks[i].settingColor = color(255, 165, 0);
-    blocks[i].isObstacle = false;
+    blocks[i].reset();
   }
 }

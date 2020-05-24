@@ -17,6 +17,7 @@ Algorithms.prototype.run = function() {
 	switch(this.algorithm)
 	{
 		case 'DFS':
+			path = new Array();
 			this.findStartAndFinish();
 			dfs(startBlockIndex, path);
 			for(var i = 0; i < path.length; i++)
@@ -28,6 +29,7 @@ Algorithms.prototype.run = function() {
 			}
 			break;
 		case 'BFS':
+			path = new Array();
 			this.findStartAndFinish();
 			bfs(startBlockIndex, path);
 			for(var i = 0; i < path.length; i++)
@@ -38,6 +40,7 @@ Algorithms.prototype.run = function() {
 				}
 			}
 		case 'Greedy':
+			path = new Array();
 			this.findStartAndFinish();
 			greedy(startBlockIndex, finishBlockIndex, path);
 			for(var i = 0; i < path.length; i++)
@@ -157,6 +160,7 @@ function bfs(nodeIndex, path) {
 			}
 		}
 	}
+	queue.clear();
 }
 
 function greedy(startIndex, finishBlockIndex, path)
@@ -201,7 +205,8 @@ function greedy(startIndex, finishBlockIndex, path)
 			}
 		}
 	}
-	
+	queue.clear();
+
 }
 
 function heuristic(current, goal)

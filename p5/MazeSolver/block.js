@@ -8,6 +8,13 @@ function Block(x, y, side) {
   this.isObstacle = false;
 }
 
+Block.prototype.reset = function() {
+  this.color = color(255);
+  this.settingColor = color(255);
+  this.rolloverColor = color(255, 165, 0);
+  this.isObstacle = false;
+};
+
 Block.prototype.getColor = function() {
   return this.color;
 };
